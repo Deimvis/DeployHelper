@@ -1,9 +1,13 @@
 import argparse
+import importlib.resources as importlib_resources
 import subprocess as sp
 
 
+pkg = importlib_resources.files('deploy_helper')
+
+
 def setup_init_cmd(args):
-    sp.run('./setup_init')
+    sp.run(pkg / 'setup_init')
 
 
 def parse_args():
