@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+TEMPLATES=$(dirname "${BASH_SOURCE[0]}")/templates
+
 set -e
 
 mkdir deploy
@@ -10,7 +12,7 @@ else
     git clone https://github.com/Deimvis/DTOOLS.git deploy/_DTOOLS
 fi
 
-cp templates/cmd deploy/cmd
+cp $TEMPLATES/cmd deploy/cmd
 chmod +x deploy/cmd
 echo '{ "example_key": "example_value" }' | jq > deploy/hkv.json
 
@@ -18,7 +20,7 @@ mkdir -p deploy/local/example/cmd
 mkdir -p deploy/docker/example/cmd
 mkdir -p deploy/vm/example/cmd
 
-cp templates/vm_deploy deploy/vm/example/cmd/deploy
+cp $TEMPLATES/vm_deploy deploy/vm/example/cmd/deploy
 chmod +x deploy/vm/example/cmd/deploy
-cp templates/vm_hkv.json deploy/vm/example/cmd/hkv.json
+cp $TEMPLATES/vm_hkv.json deploy/vm/example/cmd/hkv.json
 
