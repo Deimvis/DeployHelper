@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+
+mkdir deploy
+
+if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    git submodule add https://github.com/Deimvis/DTOOLS.git deploy/_DTOOLS
+else
+    git clone https://github.com/Deimvis/DTOOLS.git deploy/_DTOOLS
+fi
+
+cp templates/cmd deploy/cmd
+chmod +x deploy/cmd
+echo '{ "example_key": "example_value" }' | jq > hkv.json
+
+mkdir -p deploy/local/example/cmd
+mkdir -p deploy/docker/example/cmd
+mkdir -p deploy/vm/example/cmd
+
+cp templates/vm_deploy deploy/vm/example/cmd/deploy
+chmod +x deploy/vm/example/cmd/deploy
+cp templates/vm_hkv.json deploy/vm/example/cmd/hkv.json
+

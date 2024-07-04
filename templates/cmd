@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -e
+
+DEPLOY_TYPE=$1
+RESOURCE=$2
+ACTION=$3
+
+export DTOOLS="$(dirname "${BASH_SOURCE[0]}")/_DTOOLS"
+export _DEPLOY_TYPE="$DEPLOY_TYPE"
+export _RESOURCE="$RESOURCE"
+export _ACTION="$ACTION"
+export _DEPLOY_DIR="$(dirname ${BASH_SOURCE[0]})"
+
+source $DTOOLS/lib/env
+env__exenv ".env.${DEPLOY_TYPE}"
+
+./deploy/${DEPLOY_TYPE}/${RESOURCE}/cmd/${ACTION} ${@:4}

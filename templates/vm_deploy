@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -e
+
+source $DTOOLS/lib/internal/logging
+source $DTOOLS/lib/cron
+source $DTOOLS/lib/hkv
+source $DTOOLS/lib/shortcuts
+
+hkv=$(hkv__export)
+log_info "Using hkv:"
+hkv__print "$hkv"
+export SSH_HOST=$(hkv__get "$hkv" "ssh_host")
+export SSH_USER=$(hkv__get "$hkv" "ssh_user")
+export SSH_PKEY=$(hkv__get "$hkv" "ssh_pkey")
+export REMOTE_WORKDIR=$(hkv__get "$hkv" "remote_workdir")
+SERVICES=$(echo $(hkv__get "$hkv" "services") | jq -r '.[]')
+
+PROJECT_ROOT="$(dirname $_DEPLOY_DIR)"
+
+
+echo "Stage: build_and_push"
+BUILD_AND_PUSH $SERVICES
+
+echo "Stage: scp_bundle"
+SCP_BUNDLE "$REMOTE_WORKDIR"
+SCP deploy/vm/backend/nginx "$REMOTE_WORKDIR/deploy/docker/"
+SCP deploy/vm/backend/cert  "$REMOTE_WORKDIR/"
+SCP $DTOOLS/cli             "$REMOTE_WORKDIR/DTOOLS/"
+export REMOTE_CRON_LOGS_DIR="$REMOTE_WORKDIR/cron_logs"
+SSH "mkdir -p $REMOTE_CRON_LOGS_DIR"
+envsubst < deploy/vm/backend/cron/cron.conf.template > deploy/vm/backend/cron/cron.conf
+SSHf cron__set_raw "$(cat deploy/vm/backend/cron/cron.conf)"
+
+echo "Stage: setup_vm"
+SETUP_VM
+SSH "pip install pyTelegramBotAPI &> /dev/null"
+SSHf DR_UPDATE_MIRROR "https://mirror.gcr.io/"
+DR_YANDEX_AUTH "$PROJECT_ROOT/secrets/yc_key.json"
+
+echo "Stage: pull_and_up"
+PULL_AND_UP $SERVICES
