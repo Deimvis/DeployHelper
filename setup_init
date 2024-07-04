@@ -12,7 +12,7 @@ fi
 
 cp templates/cmd deploy/cmd
 chmod +x deploy/cmd
-echo '{ "example_key": "example_value" }' | jq > hkv.json
+echo '{ "example_key": "example_value" }' | jq > deploy/hkv.json
 
 mkdir -p deploy/local/example/cmd
 mkdir -p deploy/docker/example/cmd
