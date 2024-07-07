@@ -2,6 +2,11 @@
 
 set -e
 
+REPO_ROOT_PATH=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -n "$REPO_ROOT_PATH" ]; then
+    cd $REPO_ROOT_PATH
+fi
+
 if git submodule status deploy/_DTOOLS &> /dev/null; then
     git rm --cached deploy/_DTOOLS
     git config -f .gitmodules --remove-section submodule.deploy/_DTOOLS
