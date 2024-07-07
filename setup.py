@@ -8,7 +8,7 @@ setup(
     version='0.1',
     packages=['deploy_helper'],
     install_requires=requirements,
-    package_data={'deploy_helper': ['templates/*', 'setup_init']},
+    package_data={'deploy_helper': ['templates/*', 'cmd/*']},
     include_package_data=True,
     entry_points = {
         'console_scripts': ['dh=deploy_helper.main:main'],

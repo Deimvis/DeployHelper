@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+if git submodule status deploy/_DTOOLS &> /dev/null; then
+    git rm --cached deploy/_DTOOLS
+    git config -f .gitmodules --remove-section submodule.deploy/_DTOOLS
+    if [ ! -s ".gitmodules" ]; then rm ".gitmodules"; fi
+fi
+rm -rf deploy
